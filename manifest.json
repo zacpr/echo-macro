@@ -2,7 +2,7 @@
 	"Name": "Echo Macro",
 	"Description": "Type pre-recorded text with the press of a button",
 	"Author": "AshurTech",
-	"Version": "1.1.1",
+	"Version": "1.1.2",
 	"PluginUUID": "net.ashurtech.echo-macro",
 	"Icon": "icon",
 	"Category": "Productivity",
