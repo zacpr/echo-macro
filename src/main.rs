@@ -35,6 +35,8 @@ struct TypeTextSettings {
 /// Mask text for privacy in logs
 /// - If <= 10 chars: show first char only (e.g., "H...")
 /// - If > 10 chars: show first + 15 asterisks + last (e.g., "H***************d")
+/// 
+/// NOTE: This is best-effort only. Debug mode may expose raw text via SDK logging.
 fn mask_text(text: &str) -> String {
     let len = text.chars().count();
     if len == 0 {
@@ -73,7 +75,8 @@ impl EchoMacroHandler {
     }
     
     /// Type text using ydotool (works on both Wayland and X11)
-    fn type_text(&self, settings: &TypeTextSettings) -> Result<()> {
+    /// Returns true on success, false on failure
+    fn type_text(&self, settings: &TypeTextSettings) -> bool {
         // Use default text if none configured
         let text = if settings.text.is_empty() {
             "Hello World"
@@ -86,15 +89,22 @@ impl EchoMacroHandler {
         info!("Typing: {}", masked);
         
         // Type with ydotool
-        self.type_with_ydotool(text)?;
-        
-        info!("Finished typing (if you don't see text, check that ydotoold is running)");
-        Ok(())
+        match self.type_with_ydotool(text) {
+            Ok(()) => {
+                info!("Finished typing successfully");
+                true
+            }
+            Err(_) => {
+                error!("Failed to type text - ydotool error");
+                false
+            }
+        }
     }
     
     /// Spawn ydotool to type text
     /// Uses flatpak-spawn --host when running inside Flatpak
-    fn type_with_ydotool(&self, text: &str) -> Result<()> {
+    /// Returns Ok(()) on success, Err(()) on failure
+    fn type_with_ydotool(&self, text: &str) -> Result<(), ()> {
         // Note: ydotool doesn't have a per-character delay option like xdotool
         // It types all at once. For now we ignore delay_ms.
         let output = if self.is_flatpak {
@@ -123,8 +133,10 @@ impl EchoMacroHandler {
                         error!("flatpak-spawn may not be available!");
                         error!("The Flatpak needs --talk-name=org.freedesktop.Flatpak permission");
                     }
+                    Err(())
                 } else {
                     debug!("ydotool completed successfully");
+                    Ok(())
                 }
             }
             Err(e) => {
@@ -135,10 +147,9 @@ impl EchoMacroHandler {
                 } else {
                     error!("Make sure ydotool is installed: sudo apt install ydotool");
                 }
+                Err(())
             }
         }
-        
-        Ok(())
     }
 }
 
@@ -146,17 +157,21 @@ impl ActionEventHandler for EchoMacroHandler {
     fn key_down(
         &self,
         event: KeyEvent,
-        _outbound: &mut OutboundEventManager,
+        outbound: &mut OutboundEventManager,
     ) -> impl std::future::Future<Output = EventHandlerResult> + Send {
         let settings: TypeTextSettings = serde_json::from_value(event.payload.settings)
             .unwrap_or_default();
+        let context = event.context;
         
         async move {
             info!("Key pressed!");
             debug!("Settings: {:?}", settings);
             
-            if let Err(e) = self.type_text(&settings) {
-                error!("Error typing text: {}", e);
+            if !self.type_text(&settings) {
+                // Show alert indicator on the action button
+                if let Err(e) = outbound.show_alert(context).await {
+                    error!("Failed to show alert: {}", e);
+                }
             }
             
             Ok(())

@@ -7,7 +7,7 @@ A simple OpenDeck plugin that types pre-recorded text when you press a Stream De
 - Assign text to a Stream Deck button
 - When pressed, the plugin "types" that text as if you typed it on your keyboard
 - Works on **Linux (Wayland & X11)**, macOS, and Windows
-- Privacy-friendly: text content is masked in logs
+- Privacy-friendly: text content is masked in logs (best effort - see [Privacy Note](#privacy-note))
 
 ## Requirements
 
@@ -184,6 +184,15 @@ git push origin v1.0.1
 ```
 
 You can also manually trigger a release from the Actions tab.
+
+## Privacy Note
+
+This plugin attempts to mask text content in logs to protect sensitive information (passwords, API keys, etc.). However, this is a **best-effort feature**:
+
+- **Normal operation**: Text is masked (e.g., `H... (5 chars)` or `H***************d (20 chars)`)
+- **Debug mode**: If you enable debug logging, the raw text may appear in logs from the underlying SDK
+
+**Recommendation**: Do not enable debug mode in production if typing sensitive data. The masking is designed for regular usage at default log levels.
 
 ## License
 

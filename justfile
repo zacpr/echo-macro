@@ -18,6 +18,7 @@ _default:
 plugin_name := "echo-macro"
 plugin_uuid := "net.ashurtech.echo-macro"
 sdplugin_name := plugin_uuid + ".sdPlugin"
+plugin_package := plugin_uuid + ".streamDeckPlugin"
 
 # Directories
 build_dir := "build"
@@ -44,11 +45,11 @@ package: build
     
     @echo "✓ Bundle created: {{plugin_dir}}"
 
-# Create OpenDeck plugin package (.sdPlugin file which is a zip)
+# Create OpenDeck plugin package (.streamDeckPlugin file which is a zip)
 zip: package
     @echo "Creating OpenDeck plugin package..."
-    cd {{build_dir}} && zip -r {{plugin_name}}.sdPlugin {{sdplugin_name}}
-    @echo "✓ Plugin package: {{build_dir}}/{{plugin_name}}.sdPlugin"
+    cd {{build_dir}} && zip -r {{plugin_package}} {{sdplugin_name}}
+    @echo "✓ Plugin package: {{build_dir}}/{{plugin_package}}"
 
 # Install to OpenDeck plugins directory
 install: package

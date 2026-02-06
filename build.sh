@@ -21,6 +21,7 @@ NC='\033[0m' # No Color
 PLUGIN_NAME="echo-macro"
 PLUGIN_UUID="net.ashurtech.echo-macro"
 SDPLUGIN_NAME="${PLUGIN_UUID}.sdPlugin"
+PLUGIN_PACKAGE="${PLUGIN_UUID}.streamDeckPlugin"
 
 # Build directory
 BUILD_DIR="build"
@@ -106,27 +107,27 @@ echo -e "${GREEN}✓ Plugin bundle created at: ${PLUGIN_DIR}${NC}"
 echo ""
 
 # Step 4: Create OpenDeck plugin package (optional)
-# OpenDeck expects a .sdPlugin file which is actually a zip
+# OpenDeck expects a .streamDeckPlugin file which is actually a zip
 # containing the .sdPlugin folder with all plugin files inside
 if [ "$1" == "--zip" ] || [ "$1" == "-z" ] || [ "$2" == "--zip" ] || [ "$2" == "-z" ]; then
     echo -e "${YELLOW}Step 4: Creating OpenDeck plugin package...${NC}"
     
     # Remove old package if exists
-    rm -f "${BUILD_DIR}/${PLUGIN_NAME}.sdPlugin"
+    rm -f "${BUILD_DIR}/${PLUGIN_PACKAGE}"
     
     # Create zip with the .sdPlugin folder inside (OpenDeck expects this structure)
-    # The file should have .sdPlugin extension, not .zip
+    # The file should have .streamDeckPlugin extension, not .zip
     cd "${BUILD_DIR}"
-    zip -r "${PLUGIN_NAME}.sdPlugin" "${SDPLUGIN_NAME}"
+    zip -r "${PLUGIN_PACKAGE}" "${SDPLUGIN_NAME}"
     cd ..
     
-    echo -e "${GREEN}✓ Plugin package: ${BUILD_DIR}/${PLUGIN_NAME}.sdPlugin${NC}"
+    echo -e "${GREEN}✓ Plugin package: ${BUILD_DIR}/${PLUGIN_PACKAGE}${NC}"
     echo ""
     echo "To install in OpenDeck:"
     echo "  1. Open OpenDeck settings"
     echo "  2. Go to Plugins section"
-    echo "  3. Click 'Install from File' or drag the .sdPlugin file into OpenDeck"
-    echo "  4. Select: ${BUILD_DIR}/${PLUGIN_NAME}.sdPlugin"
+    echo "  3. Click 'Install from File' or drag the .streamDeckPlugin file into OpenDeck"
+    echo "  4. Select: ${BUILD_DIR}/${PLUGIN_PACKAGE}"
     echo ""
 fi
 
@@ -180,4 +181,4 @@ echo "To install manually:"
 echo "  cp -r ${PLUGIN_DIR} ~/.config/opendeck/plugins/"
 echo ""
 echo "Or install from zip in OpenDeck:"
-echo "  ${BUILD_DIR}/${SDPLUGIN_NAME}.zip"
+echo "  ${BUILD_DIR}/${PLUGIN_PACKAGE}"

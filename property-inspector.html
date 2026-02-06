@@ -17,6 +17,10 @@
         textarea { width: 100%; min-height: 100px; background: #1e1e1e; border: 1px solid #444; border-radius: 4px; color: #fff; padding: 8px; font-family: monospace; font-size: 13px; resize: vertical; box-sizing: border-box; }
         textarea:focus { outline: none; border-color: #0099ff; }
         .hint { font-size: 11px; color: #888; margin-top: 4px; }
+        .requirement { background: #3d3d3d; border-left: 3px solid #ff9900; padding: 12px; margin-top: 16px; border-radius: 0 4px 4px 0; }
+        .requirement-title { font-weight: 600; color: #ff9900; margin-bottom: 6px; font-size: 12px; }
+        .requirement-text { color: #aaa; font-size: 11px; line-height: 1.5; }
+        .requirement-code { background: #252525; padding: 2px 6px; border-radius: 3px; font-family: monospace; color: #ccc; }
     </style>
 </head>
 <body>
@@ -24,6 +28,18 @@
         <label for="macroText">Text to Type</label>
         <textarea id="macroText" placeholder="Enter the text to type here..."></textarea>
         <div class="hint">This text will be typed when you press the button</div>
+        <div class="hint" style="color: #ff9900; margin-top: 8px;">⚠️ Requires <strong>ydotool</strong> to be installed and running</div>
+    </div>
+
+    <div class="requirement">
+        <div class="requirement-title">⚠️ System Requirement</div>
+        <div class="requirement-text">
+            This plugin requires <span class="requirement-code">ydotool</span> to be installed on your system.
+            <br><br>
+            <strong>Install:</strong> <span class="requirement-code">sudo apt install ydotool</span> (or equivalent for your distro)
+            <br>
+            <strong>Start daemon:</strong> <span class="requirement-code">systemctl start ydotoold</span> (or run <span class="requirement-code">ydotoold</span> in a terminal)
+        </div>
     </div>
 
     <script>
