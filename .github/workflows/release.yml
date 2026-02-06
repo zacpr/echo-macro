@@ -1,0 +1,68 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-linux:
+    name: Build Linux
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-action@stable
+
+      - name: Build
+        run: cargo build --release
+
+      - name: Create .sdPlugin bundle
+        run: |
+          mkdir -p build/net.ashurtech.echo-macro.sdPlugin
+          cp manifest.json build/net.ashurtech.echo-macro.sdPlugin/
+          cp property-inspector.html build/net.ashurtech.echo-macro.sdPlugin/
+          cp target/release/echo-macro build/net.ashurtech.echo-macro.sdPlugin/
+          cp icon.png build/net.ashurtech.echo-macro.sdPlugin/
+          cp README.md build/net.ashurtech.echo-macro.sdPlugin/
+
+      - name: Create plugin package
+        run: |
+          cd build
+          zip -r echo-macro.sdPlugin net.ashurtech.echo-macro.sdPlugin
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: echo-macro-linux
+          path: build/echo-macro.sdPlugin
+
+  create-release:
+    name: Create Release
+    needs: [build-linux]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: echo-macro-linux
+          path: ./
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: echo-macro.sdPlugin
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

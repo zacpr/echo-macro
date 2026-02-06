@@ -1,0 +1,33 @@
+{
+	"Name": "Echo Macro",
+	"Description": "Type pre-recorded text with the press of a button",
+	"Author": "AshurTech",
+	"Version": "1.0.0",
+	"PluginUUID": "net.ashurtech.echo-macro",
+	"Icon": "icon",
+	"Category": "Productivity",
+	"CodePathLin": "echo-macro",
+	"CodePathMac": "echo-macro",
+	"CodePathWin": "echo-macro.exe",
+	"OS": [
+		{ "Platform": "linux" },
+		{ "Platform": "mac", "MinimumVersion": "10.11" },
+		{ "Platform": "windows", "MinimumVersion": "10" }
+	],
+	"Actions": [
+		{
+			"Name": "Type Text",
+			"UUID": "net.ashurtech.echo-macro.type-text",
+			"Icon": "icon",
+			"Tooltip": "Type pre-recorded text when button is pressed",
+			"Controllers": ["Keypad"],
+			"SupportedInMultiActions": true,
+			"PropertyInspectorPath": "property-inspector.html",
+			"States": [
+				{
+					"Image": "icon"
+				}
+			]
+		}
+	]
+}

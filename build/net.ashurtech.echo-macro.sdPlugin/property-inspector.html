@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echo Macro Settings</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 16px;
+            background: #2d2d2d;
+            color: #ffffff;
+            font-size: 13px;
+        }
+        .sdpi-item { margin-bottom: 16px; }
+        label { display: block; margin-bottom: 4px; font-size: 12px; color: #a0a0a0; }
+        textarea { width: 100%; min-height: 100px; background: #1e1e1e; border: 1px solid #444; border-radius: 4px; color: #fff; padding: 8px; font-family: monospace; font-size: 13px; resize: vertical; box-sizing: border-box; }
+        textarea:focus { outline: none; border-color: #0099ff; }
+        .hint { font-size: 11px; color: #888; margin-top: 4px; }
+    </style>
+</head>
+<body>
+    <div class="sdpi-item">
+        <label for="macroText">Text to Type</label>
+        <textarea id="macroText" placeholder="Enter the text to type here..."></textarea>
+        <div class="hint">This text will be typed when you press the button</div>
+    </div>
+
+    <script>
+        // Settings and context
+        let settings = { text: '' };
+        let pluginContext = '';
+        let websocket = null;
+
+        // DOM elements
+        const macroTextEl = document.getElementById('macroText');
+
+        // Connect to Stream Deck / OpenDeck
+        function connectElgatoStreamDeckSocket(port, uuid, registerEvent, info, actionInfo) {
+            console.log('PI: Connecting on port', port);
+            
+            // Parse action info for current settings
+            try {
+                const parsed = JSON.parse(actionInfo);
+                console.log('PI: actionInfo:', parsed);
+                
+                if (parsed.payload && parsed.payload.settings) {
+                    settings = { ...settings, ...parsed.payload.settings };
+                }
+                if (parsed.context) {
+                    pluginContext = parsed.context;
+                }
+            } catch (e) {
+                console.error('PI: Failed to parse actionInfo:', e);
+            }
+            
+            console.log('PI: Loaded settings');
+            console.log('PI: Context:', pluginContext);
+            
+            // Update UI
+            updateUI();
+            
+            // Setup event listeners
+            setupListeners();
+            
+            // Connect WebSocket
+            if (!websocket && port) {
+                websocket = new WebSocket('ws://localhost:' + port);
+                websocket.onopen = function() {
+                    console.log('PI: WebSocket connected');
+                    websocket.send(JSON.stringify({
+                        event: registerEvent,
+                        uuid: uuid
+                    }));
+                };
+            }
+        }
+
+        function updateUI() {
+            macroTextEl.value = settings.text || '';
+        }
+
+        function saveSettings() {
+            settings.text = macroTextEl.value;
+            
+            console.log('PI: Saving settings');
+            
+            if (websocket && websocket.readyState === WebSocket.OPEN) {
+                const msg = {
+                    event: 'setSettings',
+                    context: pluginContext,
+                    payload: settings
+                };
+                websocket.send(JSON.stringify(msg));
+                console.log('PI: Sent setSettings');
+            }
+        }
+
+        function setupListeners() {
+            macroTextEl.addEventListener('input', saveSettings);
+        }
+    </script>
+</body>
+</html>

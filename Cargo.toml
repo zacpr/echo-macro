@@ -1,0 +1,36 @@
+[package]
+# Package name - this is the internal name for the Rust crate
+name = "echo-macro"
+# Version following semantic versioning (MAJOR.MINOR.PATCH)
+version = "1.0.0"
+# Rust edition - 2021 is the current stable edition
+edition = "2021"
+
+# Dependencies required for our plugin
+[dependencies]
+# openaction: OpenDeck's Rust SDK for plugin development
+# This handles WebSocket communication with OpenDeck automatically
+openaction = "1.1"
+
+# serde: Serialization library for JSON handling
+# Needed for parsing settings from OpenDeck
+serde = { version = "1.0", features = ["derive"] }
+
+# serde_json: JSON parsing specifically
+serde_json = "1.0"
+
+# tokio: Async runtime - OpenDeck uses async WebSocket communication
+tokio = { version = "1.0", features = ["full"] }
+
+# log and simplelog: For debugging output
+log = "0.4"
+simplelog = "0.12"
+
+# anyhow: Better error handling
+anyhow = "1.0"
+
+[profile.release]
+# Optimize for size in release builds - keeps the binary smaller
+opt-level = "s"
+# Strip debug symbols - smaller binary, harder to debug though
+strip = true
