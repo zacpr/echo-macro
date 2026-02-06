@@ -38,6 +38,7 @@ package: build
     # Copy required files
     cp manifest.json {{plugin_dir}}/
     cp property-inspector.html {{plugin_dir}}/
+    cp icon.png {{plugin_dir}}/
     
     # Copy binary (Linux)
     cp target/release/echo-macro {{plugin_dir}}/
@@ -53,29 +54,29 @@ zip: package
 
 # Install to OpenDeck plugins directory
 install: package
-    @#!/usr/bin/env bash
-    echo "Installing to OpenDeck..."
-    
-    # Detect platform and set plugin directory
-    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        OPENDECK_DIR="${HOME}/.config/opendeck/plugins"
-    elif [[ "$OSTYPE" == "darwin"* ]]; then
-        OPENDECK_DIR="${HOME}/Library/Application Support/opendeck/plugins"
-    else
-        OPENDECK_DIR="${HOME}/.config/opendeck/plugins"
-    fi
-    
-    mkdir -p "${OPENDECK_DIR}"
-    
-    # Remove old version
-    if [ -d "${OPENDECK_DIR}/{{sdplugin_name}}" ]; then
-        rm -rf "${OPENDECK_DIR}/{{sdplugin_name}}"
-    fi
-    
-    # Install new version
-    cp -r {{plugin_dir}} "${OPENDECK_DIR}/"
-    echo "✓ Installed to: ${OPENDECK_DIR}/{{sdplugin_name}}"
-    echo "Note: You may need to restart OpenDeck or click 'Reload Plugins'"
+	#!/usr/bin/env bash
+	echo "Installing to OpenDeck..."
+
+	# Detect platform and set plugin directory
+	if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+		OPENDECK_DIR="${HOME}/.config/opendeck/plugins"
+	elif [[ "$OSTYPE" == "darwin"* ]]; then
+		OPENDECK_DIR="${HOME}/Library/Application Support/opendeck/plugins"
+	else
+		OPENDECK_DIR="${HOME}/.config/opendeck/plugins"
+	fi
+
+	mkdir -p "${OPENDECK_DIR}"
+
+	# Remove old version
+	if [ -d "${OPENDECK_DIR}/{{sdplugin_name}}" ]; then
+		rm -rf "${OPENDECK_DIR}/{{sdplugin_name}}"
+	fi
+
+	# Install new version
+	cp -r {{plugin_dir}} "${OPENDECK_DIR}/"
+	echo "✓ Installed to: ${OPENDECK_DIR}/{{sdplugin_name}}"
+	echo "Note: You may need to restart OpenDeck or click 'Reload Plugins'"
 
 # Build, package, zip, and install
 all: zip install
